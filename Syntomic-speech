@@ -1,0 +1,35 @@
+from gtts import gTTS
+import requests
+import subprocess
+
+
+# Function to get antonyms using Datamuse API
+def get_antonyms(word):
+    url = f"https://api.datamuse.com/words?rel_ant={word}"
+    response = requests.get(url)
+    antonyms = [item['word'] for item in response.json()]
+    return antonyms
+
+
+# Ask the user for a word to find antonyms
+word_to_find_antonyms_for = input("Enter a word to find antonyms: ")
+
+# Get antonyms for the word
+antonyms = get_antonyms(word_to_find_antonyms_for)
+
+if antonyms:
+    # Convert antonyms list to a string
+    antonyms_text = ', '.join(antonyms)
+
+    # Initialize gTTS with antonyms text
+    tts = gTTS(antonyms_text)
+
+    # Save the speech as an audio file
+    tts.save("output.mp3")
+
+    print(f"Antonyms for '{word_to_find_antonyms_for}': {antonyms_text}")
+
+    # Play the generated audio
+    subprocess.run(["start", "output.mp3"], shell=True)
+else:
+    print(f"No antonyms found for '{word_to_find_antonyms_for}'")
